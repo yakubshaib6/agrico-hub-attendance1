@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register - AgriCo Hub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 { color: #2e7d32; }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>New User Registration</h1>
+    <p id="userEmail">Loading...</p>
+    <form id="profileForm">
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="role" placeholder="Role (e.g., Farmer, Staff)" required />
+      <button type="submit">Complete Registration & Clock In</button>
+    </form>
+    <p><a href="/">← Back to Home</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
+      authDomain: "agrico-hub-attendance1.firebaseapp.com",
+      projectId: "agrico-hub-attendance1",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Protect this page: only signed-in users allowed
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("userEmail").innerText = "Signed in as: " + user.email;
+      } else {
+        // Redirect to login if not signed in
+        window.location.href = "/login.html";
+      }
+    });
+
+    document.getElementById("profileForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("fullName").value;
+      const role = document.getElementById("role").value;
+      alert(`✅ Registered!\nName: ${name}\nRole: ${role}\nClock-in recorded.`);
+      // Later: save to Firebase database
+    });
+  </script>
+</body>
+</html>
