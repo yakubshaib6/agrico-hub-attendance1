@@ -56,9 +56,34 @@
   </div>
 
   <script type="module">
-    // Temporary message — we'll add Firebase in next step
-    document.getElementById("googleBtn").addEventListener("click", () => {
-      alert("Firebase setup in progress. Please wait...");
+    // Load Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // 🔑 Firebase config — using your known project
+    const firebaseConfig = {
+      apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
+      authDomain: "agrico-hub-attendance1.firebaseapp.com",
+      projectId: "agrico-hub-attendance1",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Handle sign-in
+    document.getElementById("googleBtn").addEventListener("click", async () => {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+      
+      try {
+        const result = await signInWithPopup(auth, provider);
+        alert("✅ Success! Signed in as: " + result.user.email);
+        // TODO: Redirect to dashboard later
+      } catch (error) {
+        console.error("Sign-in error:", error);
+        alert("❌ Sign-in failed: " + (error.message || "Please try again"));
+      }
     });
   </script>
 </body>
