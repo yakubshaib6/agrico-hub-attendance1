@@ -1,32 +1,107 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
-    authDomain: "agrico-hub-attendance1.firebaseapp.com",
-    projectId: "agrico-hub-attendance1",
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // 🔑 Automatically redirect if user is signed in
-  onAuthStateChanged(auth, (user) => {
-    if (user && window.location.pathname === "/login.html") {
-      alert("✅ Signed in as: " + user.email);
-      window.location.href = "/"; // Go to homepage
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgriCo Hub - Sign In</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
-  });
-
-  document.getElementById("googleBtn").addEventListener("click", async () => {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Sign-in error:", error);
-      alert("❌ Sign-in failed: " + (error.message || "Try again"));
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
     }
-  });
-</script>
+    h1 {
+      color: #2c3e50;
+      margin-top: 0;
+    }
+    p {
+      color: #7f8c8d;
+      margin-bottom: 1.5rem;
+    }
+    #googleBtn {
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+    #googleBtn:hover {
+      background-color: #3367d6;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>AgriCo Hub Attendance</h1>
+    <p>Sign in with Google to continue</p>
+    <button id="googleBtn">Continue with Google</button>
+    <p><a href="/" style="color: #3498db; text-decoration: none;">← Back to Home</a></p>
+  </div>
+
+  <script type="module">
+    // Load Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // 🔑 Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
+      authDomain: "agrico-hub-attendance1.firebaseapp.com",
+      projectId: "agrico-hub-attendance1",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // 🔁 Handle auth state: redirect new vs returning users
+    onAuthStateChanged(auth, (user) => {
+      if (user && window.location.pathname === "/login.html") {
+        // Check if first-time user
+        const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+        
+        if (isNewUser) {
+          console.log("🆕 New user:", user.email);
+          window.location.href = "/register.html";
+        } else {
+          console.log("🔄 Returning user:", user.email);
+          window.location.href = "/clockin.html";
+        }
+      }
+    });
+
+    // 🟢 Google Sign-In button
+    document.getElementById("googleBtn").addEventListener("click", async () => {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+
+      try {
+        await signInWithPopup(auth, provider);
+        // Redirect is handled by onAuthStateChanged
+      } catch (error) {
+        console.error("Google sign-in error:", error);
+        alert("❌ Sign-in failed: " + (error.message || "Please try again"));
+      }
+    });
+  </script>
+</body>
+</html>
