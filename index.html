@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgriCo Hub Attendance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: block;
+      width: 90%;
+      max-width: 400px;
+      padding: 14px;
+      margin: 12px auto;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn.new { background-color: #4CAF50; }
+    .btn.returning { background-color: #2196F3; }
+  </style>
+</head>
+<body>
+  <h1>AgriCo Hub Attendance</h1>
+  <p>Welcome! Please select an option below to get started.</p>
+  
+  <a href="/login.html" class="btn new">New User? Register & Clock In</a>
+  <a href="/login.html" class="btn returning">Returning User? Clock In / Out</a>
+</body>
+</html>
