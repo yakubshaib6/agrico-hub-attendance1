@@ -60,19 +60,17 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
-      authDomain: "agrico-hub-attendance1.firebaseapp.com",
-      projectId: "agrico-hub-attendance1",
+      authDomain: "agrico-hub-attendance.firebaseapp.com",
+      projectId: "agrico-hub-attendance",
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Protect this page: only signed-in users allowed
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById("userEmail").innerText = "Signed in as: " + user.email;
       } else {
-        // Redirect to login if not signed in
         window.location.href = "/login.html";
       }
     });
@@ -82,7 +80,6 @@
       const name = document.getElementById("fullName").value;
       const role = document.getElementById("role").value;
       alert(`✅ Registered!\nName: ${name}\nRole: ${role}\nClock-in recorded.`);
-      // Later: save to Firebase database
     });
   </script>
 </body>
