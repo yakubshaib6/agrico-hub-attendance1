@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register - AgriCo Hub</title>
+  <title>Clock In - AgriCo Hub</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,16 +22,9 @@
       width: 90%;
       text-align: center;
     }
-    h1 { color: #2e7d32; }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
+    h1 { color: #1976d2; }
     button {
-      background-color: #4CAF50;
+      background-color: #2196F3;
       color: white;
       border: none;
       padding: 12px;
@@ -39,24 +32,23 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
+      margin: 8px 0;
     }
+    #signOut { background-color: #f44336; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>New User Registration</h1>
+    <h1>Attendance Clock</h1>
     <p id="userEmail">Loading...</p>
-    <form id="profileForm">
-      <input type="text" id="fullName" placeholder="Full Name" required />
-      <input type="text" id="role" placeholder="Role (e.g., Admin, HR)" required />
-      <button type="submit">Complete Registration & Clock In</button>
-    </form>
-    <p><a href="/">← Back to Home</a></p>
+    <button id="clockIn">✅ Clock In</button>
+    <button id="clockOut">⏹️ Clock Out</button>
+    <button id="signOut">Sign Out</button>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
@@ -80,9 +72,16 @@
       }
     });
 
-    document.getElementById("profileForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      alert("✅ Registration complete! Clock-in recorded.");
+    document.getElementById("signOut").addEventListener("click", () => {
+      signOut(auth).then(() => window.location.href = "/");
+    });
+
+    document.getElementById("clockIn").addEventListener("click", () => {
+      alert("✅ Clock In recorded at " + new Date().toLocaleTimeString());
+    });
+
+    document.getElementById("clockOut").addEventListener("click", () => {
+      alert("⏹️ Clock Out recorded at " + new Date().toLocaleTimeString());
     });
   </script>
 </body>
