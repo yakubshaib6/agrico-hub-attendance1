@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Auth Test</title>
+</head>
+<body>
+    <h2>Simple Auth State Check</h2>
+    <p id="status">Checking auth state...</p>
+    <button id="signOutBtn" style="display:none;">Sign Out</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        // Use the MINIMAL config from your working files
+        const firebaseConfig = {
+            apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
+            authDomain: "agrico-hub-attendance.firebaseapp.com",
+            projectId: "agrico-hub-attendance"
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+
+            // Simple listener
+            onAuthStateChanged(auth, (user) => {
+                const statusElement = document.getElementById('status');
+                const signOutBtn = document.getElementById('signOutBtn');
+
+                if (user) {
+                    statusElement.textContent = `✅ User is signed in: ${user.email}`;
+                    signOutBtn.style.display = 'block';
+                } else {
+                    statusElement.textContent = '❌ No user is signed in.';
+                    signOutBtn.style.display = 'none';
+                }
+            });
+
+            // Sign out button logic
+            document.getElementById('signOutBtn').addEventListener('click', async () => {
+                await signOut(auth);
+                document.getElementById('status').textContent = 'Signed out. Check auth state...';
+            });
+
+        } catch (error) {
+            document.getElementById('status').textContent = `🔥 Firebase Init Error: ${error.message}`;
+            console.error("Firebase Init Error:", error);
+        }
+    </script>
+</body>
+</html>
