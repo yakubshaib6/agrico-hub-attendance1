@@ -40,43 +40,73 @@
 <body>
   <div class="card">
     <h1>Attendance Clock</h1>
-    <p id="userEmail">Loading...</p>
+    <p>Welcome! Please clock in or out below.</p>
     <button id="clockIn">✅ Clock In</button>
     <button id="clockOut">⏹️ Clock Out</button>
-    <button id="signOut">Sign Out</button>
+    <p><a href="/">← Back to Home</a></p>
   </div>
 
   <script type="module">
+    // Import Firebase App and Realtime Database (if you plan to use it)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    // import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; // Uncomment if using DB
 
+    // --- Firebase Configuration (Including Database) ---
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
       authDomain: "agrico-hub-attendance.firebaseapp.com",
-      projectId: "agrico-hub-attendance"
+      databaseURL: "https://agrico-hub-attendance-default-rtdb.firebaseio.com", // Keep this if using DB
+      projectId: "agrico-hub-attendance",
+      storageBucket: "agrico-hub-attendance.firebasestorage.app", // If using Storage
+      messagingSenderId: "692172930935", // If using FCM
+      appId: "1:692172930935:web:f442043f538d449d4a2b72" // If using Analytics
     };
+    // --- END Configuration ---
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    // const db = getDatabase(app); // Initialize DB if needed
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById("userEmail").innerText = "Signed in as: " + user.email;
-      } else {
-        window.location.href = "/login.html";
-      }
-    });
-
-    document.getElementById("signOut").addEventListener("click", () => {
-      signOut(auth).then(() => window.location.href = "/");
-    });
-
+    // Example: Basic clock-in/out functionality (saves to console, can be extended to DB)
     document.getElementById("clockIn").addEventListener("click", () => {
-      alert("✅ Clock In recorded at " + new Date().toLocaleTimeString());
+      const clockInTime = new Date().toLocaleTimeString();
+      console.log(`Clocked in at ${clockInTime}`);
+      alert(`✅ Clock In recorded at ${clockInTime}`);
+
+      // Example: Save to Realtime Database (uncomment if using DB)
+      /*
+      try {
+        // A simple example - you might want to associate this with a user ID later
+        push(ref(db, 'attendance/'), {
+          action: 'clock_in',
+          timestamp: serverTimestamp(), // Use server time if possible
+          localTime: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error("Error saving clock-in: ", error);
+        // Handle error appropriately
+      }
+      */
     });
 
     document.getElementById("clockOut").addEventListener("click", () => {
-      alert("⏹️ Clock Out recorded at " + new Date().toLocaleTimeString());
+      const clockOutTime = new Date().toLocaleTimeString();
+      console.log(`Clocked out at ${clockOutTime}`);
+      alert(`⏹️ Clock Out recorded at ${clockOutTime}`);
+
+      // Example: Save to Realtime Database (uncomment if using DB)
+      /*
+      try {
+        // A simple example - you might want to associate this with a user ID later
+        push(ref(db, 'attendance/'), {
+          action: 'clock_out',
+          timestamp: serverTimestamp(), // Use server time if possible
+          localTime: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error("Error saving clock-out: ", error);
+        // Handle error appropriately
+      }
+      */
     });
   </script>
 </body>
