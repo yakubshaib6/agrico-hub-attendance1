@@ -61,15 +61,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+    // 🔥 ONLY 3 FIELDS — NO EXTRA SPACES, NO databaseURL
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
       authDomain: "agrico-hub-attendance.firebaseapp.com",
-      databaseURL: "https://agrico-hub-attendance-default-rtdb.firebaseio.com",
-      projectId: "agrico-hub-attendance",
-      storageBucket: "agrico-hub-attendance.firebasestorage.app",
-      messagingSenderId: "692172930935",
-      appId: "1:692172930935:web:f442043f538d449d4a2b72",
-      measurementId: "G-YCSN46GECN"
+      projectId: "agrico-hub-attendance"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -78,11 +74,7 @@
     onAuthStateChanged(auth, (user) => {
       if (user && window.location.pathname === "/login.html") {
         const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
-        if (isNewUser) {
-          window.location.href = "/register.html";
-        } else {
-          window.location.href = "/clockin.html";
-        }
+        window.location.href = isNewUser ? "/register.html" : "/clockin.html";
       }
     });
 
