@@ -98,7 +98,6 @@
         </tr>
       </thead>
       <tbody id="attendanceBody">
-        <!-- Will be filled by JavaScript -->
       </tbody>
     </table>
   </div>
@@ -110,25 +109,26 @@
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
       authDomain: "agrico-hub-attendance.firebaseapp.com",
+      databaseURL: "https://agrico-hub-attendance-default-rtdb.firebaseio.com",
       projectId: "agrico-hub-attendance",
+      storageBucket: "agrico-hub-attendance.firebasestorage.app",
+      messagingSenderId: "692172930935",
+      appId: "1:692172930935:web:f442043f538d449d4a2b72",
+      measurementId: "G-YCSN46GECN"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Protect page: only signed-in users
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById("userEmail").innerText = "Manager: " + user.email;
-
-        // Load mock attendance data (replace with Firebase later)
         loadMockAttendance();
       } else {
         window.location.href = "/login.html";
       }
     });
 
-    // Mock data — replace with real Firebase data later
     function loadMockAttendance() {
       const mockData = [
         { name: "Kwame Mensah", email: "kwame@agrico.com", mon: "9:05 AM", tue: "8:55 AM", wed: "9:10 AM", thu: "—", fri: "8:50 AM" },
@@ -139,7 +139,6 @@
 
       const tbody = document.getElementById("attendanceBody");
       tbody.innerHTML = "";
-
       mockData.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -155,19 +154,14 @@
       });
     }
 
-    // Sign out
     document.getElementById("signOut").addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "/";
-      });
+      signOut(auth).then(() => window.location.href = "/");
     });
 
-    // Export to CSV
     document.getElementById("exportBtn").addEventListener("click", () => {
       const table = document.getElementById("attendanceTable");
       let csv = [];
       const rows = table.querySelectorAll("tr");
-      
       for (let i = 0; i < rows.length; i++) {
         const cols = rows[i].querySelectorAll("td, th");
         const row = [];
@@ -176,7 +170,6 @@
         }
         csv.push(row.join(","));
       }
-
       const csvString = csv.join("\n");
       const blob = new Blob([csvString], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
