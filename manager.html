@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manager Dashboard - AgriCo Hub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8f0;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h1 {
+      color: #1976d2;
+      margin-top: 0;
+      text-align: center;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #userEmail {
+      font-size: 14px;
+      color: #555;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+    .status-present { color: #2e7d32; font-weight: bold; }
+    .status-absent { color: #d32f2f; }
+    .btn {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background-color: #1565c0;
+    }
+    .logout {
+      background-color: #f44336;
+    }
+    .logout:hover {
+      background-color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Manager Dashboard</h1>
+      <div>
+        <button id="exportBtn" class="btn">Export to CSV</button>
+        <button id="signOut" class="btn logout">Sign Out</button>
+      </div>
+    </div>
+    <p id="userEmail">Loading manager info...</p>
+
+    <h2>Team Attendance (This Week)</h2>
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+        </tr>
+      </thead>
+      <tbody id="attendanceBody">
+        <!-- Will be filled by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
+      authDomain: "agrico-hub-attendance.firebaseapp.com",
+      projectId: "agrico-hub-attendance",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Protect page: only signed-in users
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("userEmail").innerText = "Manager: " + user.email;
+
+        // Load mock attendance data (replace with Firebase later)
+        loadMockAttendance();
+      } else {
+        window.location.href = "/login.html";
+      }
+    });
+
+    // Mock data — replace with real Firebase data later
+    function loadMockAttendance() {
+      const mockData = [
+        { name: "Kwame Mensah", email: "kwame@agrico.com", mon: "9:05 AM", tue: "8:55 AM", wed: "9:10 AM", thu: "—", fri: "8:50 AM" },
+        { name: "Amina Yusuf", email: "amina@agrico.com", mon: "8:50 AM", tue: "9:00 AM", wed: "Present", thu: "9:05 AM", fri: "9:00 AM" },
+        { name: "John Doe", email: "john@agrico.com", mon: "—", tue: "—", wed: "—", thu: "—", fri: "—" },
+        { name: "Efia Asante", email: "efia@agrico.com", mon: "9:00 AM", tue: "9:00 AM", wed: "9:00 AM", thu: "9:00 AM", fri: "9:00 AM" }
+      ];
+
+      const tbody = document.getElementById("attendanceBody");
+      tbody.innerHTML = "";
+
+      mockData.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.name}</td>
+          <td>${row.email}</td>
+          <td class="${row.mon === '—' ? 'status-absent' : 'status-present'}">${row.mon}</td>
+          <td class="${row.tue === '—' ? 'status-absent' : 'status-present'}">${row.tue}</td>
+          <td class="${row.wed === '—' ? 'status-absent' : 'status-present'}">${row.wed}</td>
+          <td class="${row.thu === '—' ? 'status-absent' : 'status-present'}">${row.thu}</td>
+          <td class="${row.fri === '—' ? 'status-absent' : 'status-present'}">${row.fri}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Sign out
+    document.getElementById("signOut").addEventListener("click", () => {
+      signOut(auth).then(() => {
+        window.location.href = "/";
+      });
+    });
+
+    // Export to CSV
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const table = document.getElementById("attendanceTable");
+      let csv = [];
+      const rows = table.querySelectorAll("tr");
+      
+      for (let i = 0; i < rows.length; i++) {
+        const cols = rows[i].querySelectorAll("td, th");
+        const row = [];
+        for (let j = 0; j < cols.length; j++) {
+          row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+        }
+        csv.push(row.join(","));
+      }
+
+      const csvString = csv.join("\n");
+      const blob = new Blob([csvString], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "agrico-attendance-weekly.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
