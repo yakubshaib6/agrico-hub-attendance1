@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clock In - AgriCo Hub</title>
+  <title>Register - AgriCo Hub</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,9 +22,16 @@
       width: 90%;
       text-align: center;
     }
-    h1 { color: #1976d2; }
+    h1 { color: #2e7d32; }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
     button {
-      background-color: #2196F3;
+      background-color: #4CAF50;
       color: white;
       border: none;
       padding: 12px;
@@ -32,33 +39,29 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
-      margin: 8px 0;
     }
-    #signOut { background-color: #f44336; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Attendance Clock</h1>
+    <h1>New User Registration</h1>
     <p id="userEmail">Loading...</p>
-    <button id="clockIn">✅ Clock In</button>
-    <button id="clockOut">⏹️ Clock Out</button>
-    <button id="signOut">Sign Out</button>
+    <form id="profileForm">
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="role" placeholder="Role (e.g., Admin, HR)" required />
+      <button type="submit">Complete Registration & Clock In</button>
+    </form>
+    <p><a href="/">← Back to Home</a></p>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
       authDomain: "agrico-hub-attendance.firebaseapp.com",
-      databaseURL: "https://agrico-hub-attendance-default-rtdb.firebaseio.com",
-      projectId: "agrico-hub-attendance",
-      storageBucket: "agrico-hub-attendance.firebasestorage.app",
-      messagingSenderId: "692172930935",
-      appId: "1:692172930935:web:f442043f538d449d4a2b72",
-      measurementId: "G-YCSN46GECN"
+      projectId: "agrico-hub-attendance"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -72,16 +75,9 @@
       }
     });
 
-    document.getElementById("signOut").addEventListener("click", () => {
-      signOut(auth).then(() => window.location.href = "/");
-    });
-
-    document.getElementById("clockIn").addEventListener("click", () => {
-      alert("✅ Clock In recorded at " + new Date().toLocaleTimeString());
-    });
-
-    document.getElementById("clockOut").addEventListener("click", () => {
-      alert("⏹️ Clock Out recorded at " + new Date().toLocaleTimeString());
+    document.getElementById("profileForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("✅ Registration complete! Clock-in recorded.");
     });
   </script>
 </body>
