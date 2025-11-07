@@ -48,7 +48,7 @@
     <p id="userEmail">Loading...</p>
     <form id="profileForm">
       <input type="text" id="fullName" placeholder="Full Name" required />
-      <input type="text" id="role" placeholder="Role (e.g., Farmer, Staff)" required />
+      <input type="text" id="role" placeholder="Role (e.g., Admin, HR)" required />
       <button type="submit">Complete Registration & Clock In</button>
     </form>
     <p><a href="/">← Back to Home</a></p>
@@ -61,7 +61,12 @@
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
       authDomain: "agrico-hub-attendance.firebaseapp.com",
+      databaseURL: "https://agrico-hub-attendance-default-rtdb.firebaseio.com",
       projectId: "agrico-hub-attendance",
+      storageBucket: "agrico-hub-attendance.firebasestorage.app",
+      messagingSenderId: "692172930935",
+      appId: "1:692172930935:web:f442043f538d449d4a2b72",
+      measurementId: "G-YCSN46GECN"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -77,9 +82,7 @@
 
     document.getElementById("profileForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      const name = document.getElementById("fullName").value;
-      const role = document.getElementById("role").value;
-      alert(`✅ Registered!\nName: ${name}\nRole: ${role}\nClock-in recorded.`);
+      alert("✅ Registration complete! Clock-in recorded.");
     });
   </script>
 </body>
