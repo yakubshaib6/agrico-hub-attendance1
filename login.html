@@ -58,27 +58,21 @@
   </div>
 
   <script type="module">
-    // Load Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // 🔑 Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
-      authDomain: "agrico-hub-attendance1.firebaseapp.com",
-      projectId: "agrico-hub-attendance1",
+      authDomain: "agrico-hub-attendance.firebaseapp.com",
+      projectId: "agrico-hub-attendance",
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // 🔁 Handle auth state: redirect new vs returning users
     onAuthStateChanged(auth, (user) => {
       if (user && window.location.pathname === "/login.html") {
-        // Check if first-time user
         const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
-        
         if (isNewUser) {
           console.log("🆕 New user:", user.email);
           window.location.href = "/register.html";
@@ -89,17 +83,14 @@
       }
     });
 
-    // 🟢 Google Sign-In button
     document.getElementById("googleBtn").addEventListener("click", async () => {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
-
       try {
         await signInWithPopup(auth, provider);
-        // Redirect is handled by onAuthStateChanged
       } catch (error) {
-        console.error("Google sign-in error:", error);
-        alert("❌ Sign-in failed: " + (error.message || "Please try again"));
+        console.error("Sign-in error:", error);
+        alert("❌ Sign-in failed: " + (error.message || "Try again"));
       }
     });
   </script>
