@@ -3,131 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AgriCo Hub - Sign In</title>
+  <title>AgriCo Hub Attendance</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f7fa;
+      background-color: #f0f8f0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
       padding: 20px;
-    }
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
-      max-width: 400px;
-      width: 100%;
     }
     h1 {
-      color: #2c3e50;
-      margin-top: 0;
+      color: #2e7d32;
+      margin-bottom: 20px;
     }
-    p {
-      color: #7f8c8d;
-      margin-bottom: 1.5rem;
-    }
-    #googleBtn {
-      background-color: #4285f4;
-      color: white;
+    .btn {
+      display: block;
+      width: 90%;
+      max-width: 400px;
+      padding: 14px;
+      margin: 12px auto;
       border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
+      border-radius: 8px;
+      font-size: 18px;
       font-weight: bold;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
     }
-    #googleBtn:hover {
-      background-color: #3367d6;
-    }
+    .btn.new { background-color: #4CAF50; }
+    .btn.returning { background-color: #2196F3; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>AgriCo Hub Attendance</h1>
-    <p>Sign in with Google to continue</p>
-    <button id="googleBtn">Continue with Google</button>
-    <p><a href="/" style="color: #3498db; text-decoration: none;">← Back to Home</a></p>
-  </div>
+  <h1>AgriCo Hub Attendance</h1>
+  <p>Welcome! Please select an option below to get started.</p>
 
-  <script type="module">
-    // Import necessary Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    // --- MINIMAL Firebase Configuration ---
-    // Only the essential fields for Authentication
-    const firebaseConfig = {
-      apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
-      authDomain: "agrico-hub-attendance.firebaseapp.com",
-      projectId: "agrico-hub-attendance"
-    };
-    // --- END Configuration ---
-
-    // Initialize Firebase App
-    const app = initializeApp(firebaseConfig);
-    // Get the Authentication instance
-    const auth = getAuth(app);
-
-    // --- DEBUG: Listen for authentication state changes ---
-    onAuthStateChanged(auth, (user) => {
-      console.log("DEBUG: onAuthStateChanged fired. User object:", user); // Log the entire user object
-
-      if (user) {
-        console.log("DEBUG: User is signed in. Email:", user.email);
-        console.log("DEBUG: User metadata - Creation Time:", user.metadata.creationTime, "Last Sign-in:", user.metadata.lastSignInTime);
-
-        // Check if we are currently on the login page
-        if (window.location.pathname === "/login.html") {
-          console.log("DEBUG: Currently on /login.html and user exists. Determining new/returning...");
-          // Determine if user is new or returning based on metadata
-          const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
-          console.log("DEBUG: Is new user?", isNewUser);
-
-          // Set the redirect URL based on new/returning status
-          const redirectUrl = isNewUser ? "/register.html" : "/clockin.html";
-          console.log("DEBUG: Redirecting to:", redirectUrl);
-
-          // Perform the redirect
-          window.location.href = redirectUrl;
-        } else {
-          console.log("DEBUG: Not on /login.html, not redirecting from here.");
-          // Optionally, update UI elements on other pages here if needed
-        }
-      } else {
-        console.log("DEBUG: No user is signed in (or user signed out).");
-        // No user signed in, the sign-in button should be visible/functional
-      }
-    });
-    // --- END DEBUG ---
-
-    // --- Handle the Sign-In Button Click ---
-    document.getElementById("googleBtn").addEventListener("click", async () => {
-      console.log("DEBUG: 'Continue with Google' button clicked.");
-      const provider = new GoogleAuthProvider();
-      // Optional: Configure provider parameters if needed
-      // provider.setCustomParameters({ prompt: "select_account" });
-
-      try {
-        // Attempt to sign in with Google popup
-        const result = await signInWithPopup(auth, provider);
-        console.log("DEBUG: signInWithPopup successful. Result:", result);
-        // The onAuthStateChanged listener should now detect the user and handle redirection
-      } catch (error) {
-        console.error("Sign-in error:", error);
-        console.error("Error code:", error.code);
-        console.error("Error message:", error.message);
-        alert("❌ Sign-in failed: " + (error.message || "Try again"));
-      }
-    });
-    // --- END Button Handler ---
-  </script>
+  <!-- Direct links to the pages -->
+  <a href="/register.html" class="btn new">New User? Register & Clock In</a>
+  <a href="/clockin.html" class="btn returning">Returning User? Clock In / Out</a>
 </body>
 </html>
