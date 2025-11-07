@@ -58,36 +58,76 @@
   </div>
 
   <script type="module">
+    // Import necessary Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // 🔥 ONLY 3 FIELDS — NO EXTRA SPACES, NO databaseURL
+    // --- MINIMAL Firebase Configuration ---
+    // Only the essential fields for Authentication
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
       authDomain: "agrico-hub-attendance.firebaseapp.com",
       projectId: "agrico-hub-attendance"
     };
+    // --- END Configuration ---
 
+    // Initialize Firebase App
     const app = initializeApp(firebaseConfig);
+    // Get the Authentication instance
     const auth = getAuth(app);
 
+    // --- DEBUG: Listen for authentication state changes ---
     onAuthStateChanged(auth, (user) => {
-      if (user && window.location.pathname === "/login.html") {
-        const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
-        window.location.href = isNewUser ? "/register.html" : "/clockin.html";
+      console.log("DEBUG: onAuthStateChanged fired. User object:", user); // Log the entire user object
+
+      if (user) {
+        console.log("DEBUG: User is signed in. Email:", user.email);
+        console.log("DEBUG: User metadata - Creation Time:", user.metadata.creationTime, "Last Sign-in:", user.metadata.lastSignInTime);
+
+        // Check if we are currently on the login page
+        if (window.location.pathname === "/login.html") {
+          console.log("DEBUG: Currently on /login.html and user exists. Determining new/returning...");
+          // Determine if user is new or returning based on metadata
+          const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+          console.log("DEBUG: Is new user?", isNewUser);
+
+          // Set the redirect URL based on new/returning status
+          const redirectUrl = isNewUser ? "/register.html" : "/clockin.html";
+          console.log("DEBUG: Redirecting to:", redirectUrl);
+
+          // Perform the redirect
+          window.location.href = redirectUrl;
+        } else {
+          console.log("DEBUG: Not on /login.html, not redirecting from here.");
+          // Optionally, update UI elements on other pages here if needed
+        }
+      } else {
+        console.log("DEBUG: No user is signed in (or user signed out).");
+        // No user signed in, the sign-in button should be visible/functional
       }
     });
+    // --- END DEBUG ---
 
+    // --- Handle the Sign-In Button Click ---
     document.getElementById("googleBtn").addEventListener("click", async () => {
+      console.log("DEBUG: 'Continue with Google' button clicked.");
       const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: "select_account" });
+      // Optional: Configure provider parameters if needed
+      // provider.setCustomParameters({ prompt: "select_account" });
+
       try {
-        await signInWithPopup(auth, provider);
+        // Attempt to sign in with Google popup
+        const result = await signInWithPopup(auth, provider);
+        console.log("DEBUG: signInWithPopup successful. Result:", result);
+        // The onAuthStateChanged listener should now detect the user and handle redirection
       } catch (error) {
         console.error("Sign-in error:", error);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
         alert("❌ Sign-in failed: " + (error.message || "Try again"));
       }
     });
+    // --- END Button Handler ---
   </script>
 </body>
 </html>
