@@ -45,9 +45,9 @@
 <body>
   <div class="card">
     <h1>New User Registration</h1>
-    <p id="userEmail">Loading...</p>
     <form id="profileForm">
       <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="email" id="email" placeholder="Email Address" required />
       <input type="text" id="role" placeholder="Role (e.g., Admin, HR)" required />
       <button type="submit">Complete Registration & Clock In</button>
     </form>
@@ -55,29 +55,56 @@
   </div>
 
   <script type="module">
+    // Import Firebase App and Realtime Database (if you plan to use it)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    // import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; // Uncomment if using DB
 
+    // --- Firebase Configuration (Including Database) ---
     const firebaseConfig = {
       apiKey: "AIzaSyAliWW4PXhdXzoLJsqcen0i8Y9p65J1T8I",
       authDomain: "agrico-hub-attendance.firebaseapp.com",
-      projectId: "agrico-hub-attendance"
+      databaseURL: "https://agrico-hub-attendance-default-rtdb.firebaseio.com", // Keep this if using DB
+      projectId: "agrico-hub-attendance",
+      storageBucket: "agrico-hub-attendance.firebasestorage.app", // If using Storage
+      messagingSenderId: "692172930935", // If using FCM
+      appId: "1:692172930935:web:f442043f538d449d4a2b72" // If using Analytics
     };
+    // --- END Configuration ---
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    // const db = getDatabase(app); // Initialize DB if needed
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById("userEmail").innerText = "Signed in as: " + user.email;
-      } else {
-        window.location.href = "/login.html";
-      }
-    });
-
-    document.getElementById("profileForm").addEventListener("submit", (e) => {
+    document.getElementById("profileForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      alert("✅ Registration complete! Clock-in recorded.");
+      const name = document.getElementById("fullName").value;
+      const email = document.getElementById("email").value;
+      const role = document.getElementById("role").value;
+
+      // Example: Save user data to Realtime Database (uncomment if using DB)
+      /*
+      try {
+        const userId = email.replace('@', '_at_').replace(/\./g, '_dot_'); // Simple ID generation
+        await set(ref(db, 'users/' + userId), {
+          name: name,
+          email: email,
+          role: role,
+          registeredAt: Date.now()
+        });
+        console.log("User registered successfully!");
+      } catch (error) {
+        console.error("Error registering user: ", error);
+        alert("Registration failed. Please try again.");
+        return; // Don't show success alert if DB save failed
+      }
+      */
+
+      // Example: Simulate clock-in time
+      const clockInTime = new Date().toISOString();
+      console.log(`Registration complete for ${name} (${email}). Clock-in recorded at ${clockInTime}.`);
+
+      // Show success message and redirect
+      alert(`✅ Registration complete!\nName: ${name}\nEmail: ${email}\nClock-in recorded.`);
+      window.location.href = "/clockin.html"; // Redirect to clock-in page after registration
     });
   </script>
 </body>
