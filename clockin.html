@@ -49,22 +49,39 @@
   <script type="module">
     // Import Firebase App and Realtime Database (if you plan to use it)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    // Import Firebase Auth if you need to check user state
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     // import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; // Uncomment if using DB
 
     // --- Firebase Configuration (Including Database) ---
     const firebaseConfig = {
-      apiKey: "YOUR_NEW_API_KEY", // Replace with your new project's API key
-      authDomain: "agrico-hub-attendance1.firebaseapp.com", // Updated to new project
-      databaseURL: "https://agrico-hub-attendance1-default-rtdb.firebaseio.com", // Updated to new project
-      projectId: "agrico-hub-attendance1", // Updated to new project
-      storageBucket: "agrico-hub-attendance1.appspot.com", // Updated to new project
-      messagingSenderId: "YOUR_NEW_SENDER_ID", // Replace with your new project's sender ID
-      appId: "YOUR_NEW_APP_ID" // Replace with your new project's app ID
+      apiKey: "AIzaSyC3LWLwcUdBSxSfjplx4R6I2DMQVzjbHMo",
+      authDomain: "agrico-hub-attendance1.firebaseapp.com",
+      databaseURL: "https://agrico-hub-attendance1-default-rtdb.firebaseio.com",
+      projectId: "agrico-hub-attendance1",
+      storageBucket: "agrico-hub-attendance1.firebasestorage.app",
+      messagingSenderId: "402281192901",
+      appId: "1:402281192901:web:164b64e4bdc56cb6f33fac"
     };
     // --- END Configuration ---
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app); // Initialize Auth if checking user state
     // const db = getDatabase(app); // Initialize DB if needed
+
+    // Example: Check auth state (optional)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("Current user:", user.email);
+        // User is signed in, enable clock buttons
+        document.getElementById("clockIn").disabled = false;
+        document.getElementById("clockOut").disabled = false;
+      } else {
+        console.log("No user is signed in.");
+        // Optionally redirect to login page
+        // window.location.href = "/login.html";
+      }
+    });
 
     // Example: Basic clock-in/out functionality (saves to console, can be extended to DB)
     document.getElementById("clockIn").addEventListener("click", () => {
@@ -79,7 +96,8 @@
         push(ref(db, 'attendance/'), {
           action: 'clock_in',
           timestamp: serverTimestamp(), // Use server time if possible
-          localTime: new Date().toISOString()
+          localTime: new Date().toISOString(),
+          userId: auth.currentUser?.uid // Include user ID if authenticated
         });
       } catch (error) {
         console.error("Error saving clock-in: ", error);
@@ -100,7 +118,8 @@
         push(ref(db, 'attendance/'), {
           action: 'clock_out',
           timestamp: serverTimestamp(), // Use server time if possible
-          localTime: new Date().toISOString()
+          localTime: new Date().toISOString(),
+          userId: auth.currentUser?.uid // Include user ID if authenticated
         });
       } catch (error) {
         console.error("Error saving clock-out: ", error);
