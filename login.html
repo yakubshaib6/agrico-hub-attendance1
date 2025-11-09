@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - AgriCo Hub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 { color: #2e7d32; }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 8px 0;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #ccc;
+    }
+    .divider span {
+      padding: 0 10px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>AgriCo Hub Login</h1>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email Address" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    
+    <div class="divider">
+      <span>OR</span>
+    </div>
+    
+    <button id="googleLogin">Continue with Google</button>
+    
+    <p><a href="/register.html">Don't have an account? Register here</a></p>
+    <p><a href="/">← Back to Home</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC3LWLwcUdBSxSfjplx4R6I2DMQVzjbHMo",
+      authDomain: "agrico-hub-attendance1.firebaseapp.com",
+      databaseURL: "https://agrico-hub-attendance1-default-rtdb.firebaseio.com",
+      projectId: "agrico-hub-attendance1",
+      storageBucket: "agrico-hub-attendance1.firebasestorage.app",
+      messagingSenderId: "402281192901",
+      appId: "1:402281192901:web:164b64e4bdc56cb6f33fac"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Handle form login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("User logged in:", user);
+        // Redirect to clockin page after successful login
+        window.location.href = "/clockin.html";
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Login failed: " + error.message);
+      }
+    });
+
+    // Handle Google login
+    document.getElementById("googleLogin").addEventListener("click", async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log("Google user logged in:", user);
+        // Redirect to clockin page after successful Google login
+        window.location.href = "/clockin.html";
+      } catch (error) {
+        console.error("Google login error:", error);
+        alert("Google login failed: " + error.message);
+      }
+    });
+
+    // Optional: Check auth state on page load
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is already logged in, redirect to clockin
+        window.location.href = "/clockin.html";
+      }
+      // If not logged in, stay on login page
+    });
+  </script>
+</body>
+</html>
