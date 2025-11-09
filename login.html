@@ -79,22 +79,28 @@
   </div>
 
   <script type="module">
+    // Import the core Firebase app module
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    
+    // Import the Firebase Authentication module and Google provider
     import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+    // Your Firebase configuration (for agrico-hub-attendance1)
     const firebaseConfig = {
       apiKey: "AIzaSyC3LWLwcUdBSxSfjplx4R6I2DMQVzjbHMo",
       authDomain: "agrico-hub-attendance1.firebaseapp.com",
-      databaseURL: "https://agrico-hub-attendance1-default-rtdb.firebaseio.com",
+      databaseURL: "https://agrico-hub-attendance1-default-rtdb.firebaseio.com", // Include if using RTDB
       projectId: "agrico-hub-attendance1",
       storageBucket: "agrico-hub-attendance1.firebasestorage.app",
       messagingSenderId: "402281192901",
-      appId: "1:402281192901:web:164b64e4bdc56cb6f33fac"
+      appId: "1:402281192901:web:164b64e4bdc56cb6f33fac",
+      // measurementId: "G-C9KL8S119Z" // Include if using Analytics
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    const auth = getAuth(app); // Initialize the Auth instance
+    const provider = new GoogleAuthProvider(); // Initialize the Google provider
 
     // Handle form login
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
@@ -123,7 +129,7 @@
         // Redirect to clockin page after successful Google login
         window.location.href = "/clockin.html";
       } catch (error) {
-        console.error("Google login error:", error);
+        console.error("Google login error:", error); // This should now show specific errors
         alert("Google login failed: " + error.message);
       }
     });
