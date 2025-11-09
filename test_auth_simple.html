@@ -3,53 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clock In - AgriCo Hub</title>
+  <title>Manager Dashboard - AgriCo Hub</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f8f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
+      padding: 20px;
+      margin: 0;
     }
-    .card {
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
       background: white;
-      padding: 2rem;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 90%;
+      padding: 20px;
+    }
+    h1 {
+      color: #1976d2;
+      margin-top: 0;
       text-align: center;
     }
-    h1 { color: #1976d2; }
-    button {
-      background-color: #2196F3;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #userEmail {
+      font-size: 14px;
+      color: #555;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+    .status-present { color: #2e7d32; font-weight: bold; }
+    .status-absent { color: #d32f2f; }
+    .btn {
+      background-color: #1976d2;
       color: white;
       border: none;
-      padding: 12px;
-      width: 100%;
+      padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 16px;
-      margin: 8px 0;
+      font-size: 14px;
     }
-    #signOut { background-color: #f44336; }
+    .btn:hover {
+      background-color: #1565c0;
+    }
+    .logout {
+      background-color: #f44336;
+    }
+    .logout:hover {
+      background-color: #d32f2f;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Attendance Clock</h1>
-    <p>Welcome! Please clock in or out below.</p>
-    <button id="clockIn">✅ Clock In</button>
-    <button id="clockOut">⏹️ Clock Out</button>
-    <p><a href="/">← Back to Home</a></p>
+  <div class="container">
+    <div class="header">
+      <h1>Manager Dashboard</h1>
+      <div>
+        <button id="exportBtn" class="btn">Export to CSV</button>
+        <button id="signOut" class="btn logout" style="display:none;">Sign Out</button> <!-- Hidden without auth -->
+      </div>
+    </div>
+    <p id="userEmail">Manager Access - No Auth Check</p> <!-- Note: No auth check -->
+
+    <h2>Team Attendance (Mock Data)</h2>
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+        </tr>
+      </thead>
+      <tbody id="attendanceBody">
+      </tbody>
+    </table>
   </div>
 
   <script type="module">
     // Import Firebase App and Realtime Database (if you plan to use it)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    // import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; // Uncomment if using DB
+    // import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; // Uncomment if using DB
 
     // --- Firebase Configuration (Including Database) ---
     const firebaseConfig = {
@@ -66,47 +122,58 @@
     const app = initializeApp(firebaseConfig);
     // const db = getDatabase(app); // Initialize DB if needed
 
-    // Example: Basic clock-in/out functionality (saves to console, can be extended to DB)
-    document.getElementById("clockIn").addEventListener("click", () => {
-      const clockInTime = new Date().toLocaleTimeString();
-      console.log(`Clocked in at ${clockInTime}`);
-      alert(`✅ Clock In recorded at ${clockInTime}`);
+    // Mock data loading (replace with real DB calls later)
+    function loadMockAttendance() {
+      const mockData = [
+        { name: "Kwame Mensah", email: "kwame@agrico.com", mon: "9:05 AM", tue: "8:55 AM", wed: "9:10 AM", thu: "—", fri: "8:50 AM" },
+        { name: "Amina Yusuf", email: "amina@agrico.com", mon: "8:50 AM", tue: "9:00 AM", wed: "Present", thu: "9:05 AM", fri: "9:00 AM" },
+        { name: "John Doe", email: "john@agrico.com", mon: "—", tue: "—", wed: "—", thu: "—", fri: "—" },
+        { name: "Efia Asante", email: "efia@agrico.com", mon: "9:00 AM", tue: "9:00 AM", wed: "9:00 AM", thu: "9:00 AM", fri: "9:00 AM" }
+      ];
 
-      // Example: Save to Realtime Database (uncomment if using DB)
-      /*
-      try {
-        // A simple example - you might want to associate this with a user ID later
-        push(ref(db, 'attendance/'), {
-          action: 'clock_in',
-          timestamp: serverTimestamp(), // Use server time if possible
-          localTime: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error("Error saving clock-in: ", error);
-        // Handle error appropriately
+      const tbody = document.getElementById("attendanceBody");
+      tbody.innerHTML = "";
+      mockData.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.name}</td>
+          <td>${row.email}</td>
+          <td class="${row.mon === '—' ? 'status-absent' : 'status-present'}">${row.mon}</td>
+          <td class="${row.tue === '—' ? 'status-absent' : 'status-present'}">${row.tue}</td>
+          <td class="${row.wed === '—' ? 'status-absent' : 'status-present'}">${row.wed}</td>
+          <td class="${row.thu === '—' ? 'status-absent' : 'status-present'}">${row.thu}</td>
+          <td class="${row.fri === '—' ? 'status-absent' : 'status-present'}">${row.fri}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Load mock data on page load
+    loadMockAttendance();
+
+    // Export functionality (remains the same)
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const table = document.getElementById("attendanceTable");
+      let csv = [];
+      const rows = table.querySelectorAll("tr");
+      for (let i = 0; i < rows.length; i++) {
+        const cols = rows[i].querySelectorAll("td, th");
+        const row = [];
+        for (let j = 0; j < cols.length; j++) {
+          row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+        }
+        csv.push(row.join(","));
       }
-      */
-    });
-
-    document.getElementById("clockOut").addEventListener("click", () => {
-      const clockOutTime = new Date().toLocaleTimeString();
-      console.log(`Clocked out at ${clockOutTime}`);
-      alert(`⏹️ Clock Out recorded at ${clockOutTime}`);
-
-      // Example: Save to Realtime Database (uncomment if using DB)
-      /*
-      try {
-        // A simple example - you might want to associate this with a user ID later
-        push(ref(db, 'attendance/'), {
-          action: 'clock_out',
-          timestamp: serverTimestamp(), // Use server time if possible
-          localTime: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error("Error saving clock-out: ", error);
-        // Handle error appropriately
-      }
-      */
+      const csvString = csv.join("\n");
+      const blob = new Blob([csvString], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "agrico-attendance-weekly.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     });
   </script>
 </body>
